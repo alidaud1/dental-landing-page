@@ -19,6 +19,37 @@ export interface Service {
 
 export const serviceGroups: readonly ServiceGroup[] = ['Preventive', 'Restorative', 'Cosmetic']
 
+/**
+ * Each group's panel in the services showcase: which anatomical diagram to
+ * draw, and a plain-language summary of what the group is for.
+ *
+ * `code` is a display label only — it is not a real clinical coding system,
+ * and is written so it cannot be mistaken for one.
+ */
+export const groupDetails: Record<
+  ServiceGroup,
+  { diagram: 'preventive' | 'restorative' | 'cosmetic'; code: string; summary: string }
+> = {
+  Preventive: {
+    diagram: 'preventive',
+    code: 'GROUP 01',
+    summary:
+      'Keeping healthy teeth healthy. Regular cleaning and check-ups catch problems while they are still small and cheap to treat.',
+  },
+  Restorative: {
+    diagram: 'restorative',
+    code: 'GROUP 02',
+    summary:
+      'Repairing damage that has already happened — decay, fracture or a missing tooth — to bring back normal function.',
+  },
+  Cosmetic: {
+    diagram: 'cosmetic',
+    code: 'GROUP 03',
+    summary:
+      'Changing how teeth look, planned and agreed with you before any work begins. Results vary between individuals.',
+  },
+}
+
 export const services: readonly Service[] = [
   {
     id: 'dental-consultation',

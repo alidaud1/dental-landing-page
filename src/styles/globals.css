@@ -2,50 +2,70 @@
 
 /* ------------------------------------------------------------------
    Jaskani Dental Clinic — design tokens
-   Palette: deep teal brand, mint surfaces, warm off-white, charcoal ink.
+
+   Direction: clinical precision. Cool teal brand, near-neutral surfaces,
+   tight radii, hairline rules. The "medical" signal comes from accuracy
+   and detail — measurement ticks, anatomical diagrams, exact alignment —
+   rather than from tooth clip-art and saturated medical blue.
+
    Every colour used in components comes from here. No ad-hoc hex values.
    ------------------------------------------------------------------ */
 @theme {
-  /* Brand */
-  --color-brand-50: #f0f7f5;
-  --color-brand-100: #daeeea;
-  --color-brand-200: #b4ddd6;
-  --color-brand-300: #7fc3ba;
-  --color-brand-400: #4aa298;
-  --color-brand-500: #16807a;
-  --color-brand-600: #0f5f5c;
-  --color-brand-700: #0b4a48;
-  --color-brand-800: #083836;
-  --color-brand-900: #052624;
+  /* Brand — shifted cooler than a spa teal, short of a corporate medical blue */
+  --color-brand-50: #eef7f7;
+  --color-brand-100: #d5ecec;
+  --color-brand-200: #abd9da;
+  --color-brand-300: #74bec1;
+  --color-brand-400: #3f9ea3;
+  --color-brand-500: #107f86;
+  --color-brand-600: #0b5f66;
+  --color-brand-700: #084a51;
+  --color-brand-800: #06373d;
+  --color-brand-900: #04262a;
 
-  /* Neutrals — warm, so surfaces read as calm rather than clinical-cold */
-  --color-ink: #14211f;
-  --color-ink-soft: #3c4b48;
-  --color-ink-muted: #5a6b68;
-  --color-line: #e3e8e5;
-  --color-line-strong: #cfd8d4;
-  --color-surface: #fbfaf7;
+  /* Clinical accent — for diagrams, measurement marks, data detail */
+  --color-clinical: #0c7083;
+  --color-clinical-soft: #e3f3f7;
+
+  /* Anatomical diagram layers */
+  --color-enamel: #e8f1f2;
+  --color-dentin: #cfe2e4;
+  --color-pulp: #c2605a;
+
+  /* Neutrals — near-neutral, a touch cool. Sharper than the previous warm set. */
+  --color-ink: #10191b;
+  --color-ink-soft: #37474a;
+  --color-ink-muted: #576668;
+  --color-line: #e2e8e8;
+  --color-line-strong: #c9d4d4;
+  --color-surface: #fafbfb;
   --color-surface-raised: #ffffff;
-  --color-surface-mint: #f2f8f6;
+  --color-surface-mint: #f0f7f7;
 
-  /* Restrained warm accent — ratings, small highlights */
-  --color-accent: #9a5b1f;
-  --color-accent-soft: #f6ece0;
+  /* Restrained warm accent — the one warm note, used sparingly */
+  --color-accent: #955620;
+  --color-accent-soft: #f6ece1;
 
   /* Typography */
   --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  /* Radii */
-  --radius-card: 1rem;
-  --radius-lg-card: 1.5rem;
+  /* Radii — tightened. Precision reads as competence here. */
+  --radius-card: 0.625rem;
+  --radius-panel: 1rem;
 
   /* Shadows — layered and subtle, never dramatic */
-  --shadow-soft: 0 1px 2px rgb(20 33 31 / 0.04), 0 8px 24px -12px rgb(20 33 31 / 0.10);
-  --shadow-lift: 0 2px 4px rgb(20 33 31 / 0.05), 0 18px 40px -20px rgb(20 33 31 / 0.18);
+  --shadow-soft: 0 1px 2px rgb(16 25 27 / 0.04), 0 8px 24px -12px rgb(16 25 27 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(16 25 27 / 0.05), 0 18px 40px -20px rgb(16 25 27 / 0.18);
+  --shadow-float: 0 4px 8px rgb(16 25 27 / 0.06), 0 28px 60px -28px rgb(16 25 27 / 0.26);
 
   /* Layout */
   --spacing-header: 4.5rem;
+
+  /* Motion — one easing vocabulary across the whole site */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* ------------------------------------------------------------------
@@ -74,7 +94,7 @@
   h4 {
     font-family: var(--font-display);
     color: var(--color-ink);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
@@ -96,7 +116,7 @@
 }
 
 /* ------------------------------------------------------------------
-   Utilities
+   Layout utilities
    ------------------------------------------------------------------ */
 @utility container-page {
   width: 100%;
@@ -116,27 +136,85 @@
 /* Fluid display sizes — controlled line length is handled per-component. */
 @utility text-display {
   font-size: clamp(2.25rem, 1.35rem + 3.6vw, 4rem);
-  line-height: 1.05;
+  line-height: 1.04;
   font-weight: 700;
 }
 
 @utility text-section-title {
   font-size: clamp(1.75rem, 1.2rem + 2.1vw, 2.75rem);
-  line-height: 1.12;
+  line-height: 1.1;
   font-weight: 700;
 }
 
+/* Small monospace label — reads as a clinical reference code. */
+@utility label-clinical {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
 /* ------------------------------------------------------------------
-   Scroll reveal — content is visible by default and only hidden once
-   JS confirms IntersectionObserver support, so a JS failure never
-   leaves the page blank.
+   Clinical detail language
+   ------------------------------------------------------------------ */
+
+/* A faint measured grid — the texture of graph paper, not a decorative blob. */
+@utility clinical-grid {
+  background-image:
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+}
+
+@utility clinical-grid-dark {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+}
+
+/* Ruler ticks, used along section edges. */
+@utility clinical-ticks {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-line-strong) 0 1px,
+    transparent 1px 0.5rem
+  );
+}
+
+/* ------------------------------------------------------------------
+   Scroll reveal
+
+   Content is visible by default. The hiding styles only apply once JS has
+   added `.reveal-ready` to <html>, so a JS failure never blanks the page.
    ------------------------------------------------------------------ */
 .reveal-ready [data-reveal] {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translate3d(0, 18px, 0);
   transition:
-    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 700ms var(--ease-out-soft),
+    transform 700ms var(--ease-out-soft);
+}
+
+/*
+ * Horizontal entrances only above `lg`. On a narrow screen a full-width
+ * element offset sideways pushes past the viewport edge while it is still
+ * hidden, which flashes a horizontal scrollbar during fast scrolling. Narrow
+ * screens get the default vertical rise instead.
+ */
+@media (width >= 64rem) {
+  .reveal-ready [data-reveal='left'] {
+    transform: translate3d(-22px, 0, 0);
+  }
+
+  .reveal-ready [data-reveal='right'] {
+    transform: translate3d(22px, 0, 0);
+  }
+}
+
+.reveal-ready [data-reveal='scale'] {
+  transform: scale(0.97);
 }
 
 .reveal-ready [data-reveal].is-visible {
@@ -144,23 +222,92 @@
   transform: none;
 }
 
+/*
+ * Staggered children. The index is set as --i by useScrollReveal, so a grid
+ * of cards resolves in sequence instead of snapping in as one block.
+ */
+.reveal-ready [data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition:
+    opacity 620ms var(--ease-out-soft),
+    transform 620ms var(--ease-out-soft);
+  transition-delay: calc(var(--i, 0) * 65ms);
+}
+
+.reveal-ready [data-reveal-stagger].is-visible > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Draws an SVG path on when its container becomes visible. */
+.reveal-ready [data-draw] {
+  stroke-dasharray: var(--len, 1000);
+  stroke-dashoffset: var(--len, 1000);
+  transition: stroke-dashoffset 1400ms var(--ease-in-out-soft);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.reveal-ready .is-visible [data-draw],
+.reveal-ready [data-draw].is-visible {
+  stroke-dashoffset: 0;
+}
+
+/* ------------------------------------------------------------------
+   Interaction
+   ------------------------------------------------------------------ */
+
+/* Pointer tilt — variables are written by usePointerTilt. */
+@utility tilt-surface {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    translate3d(0, var(--tilt-lift, 0), 0);
+  transition: transform 400ms var(--ease-out-soft);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* A sheen that follows the cursor across a card. */
+@utility tilt-sheen {
+  background: radial-gradient(
+    22rem circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    color-mix(in oklab, var(--color-brand-300) 22%, transparent),
+    transparent 60%
+  );
+}
+
 @media print {
-  .reveal-ready [data-reveal] {
+  .reveal-ready [data-reveal],
+  .reveal-ready [data-reveal-stagger] > * {
     opacity: 1;
     transform: none;
   }
 }
 
+/* ------------------------------------------------------------------
+   Reduced motion — everything above degrades to a plain, static page.
+   ------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .reveal-ready [data-reveal],
-  .reveal-ready [data-reveal].is-visible {
+  .reveal-ready [data-reveal].is-visible,
+  .reveal-ready [data-reveal-stagger] > *,
+  .reveal-ready [data-reveal-stagger].is-visible > * {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .reveal-ready [data-draw] {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .tilt-surface {
+    transform: none !important;
   }
 
   *,

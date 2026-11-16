@@ -36,11 +36,15 @@ export function TreatmentJourney() {
     <section
       id={sectionIds.journey}
       aria-labelledby="journey-title"
-      className="border-y border-line bg-brand-800 py-16 text-white sm:py-20 lg:py-24"
+      className="relative overflow-hidden border-y border-line bg-brand-800 py-16 text-white sm:py-20 lg:py-24"
     >
-      <Container>
+      <div
+        aria-hidden="true"
+        className="clinical-grid-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(75%_60%_at_50%_50%,black,transparent)]"
+      />
+      <Container className="relative">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <div data-reveal>
+          <div data-reveal="left">
             <SectionHeading
               id="journey-title"
               eyebrow="What a visit looks like"
@@ -64,18 +68,25 @@ export function TreatmentJourney() {
             </div>
           </div>
 
-          <ol className="grid gap-4 sm:grid-cols-2" data-reveal>
+          <ol className="grid gap-4 sm:grid-cols-2" data-reveal-stagger>
             {steps.map((step, index) => (
               <li
                 key={step.title}
-                className="flex flex-col rounded-2xl border border-white/12 bg-white/5 p-6 transition-colors duration-300 hover:border-white/25 hover:bg-white/8"
+                className="group relative flex flex-col overflow-hidden rounded-card border border-white/12 bg-white/5 p-6 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/10"
               >
                 <span
                   aria-hidden="true"
-                  className="grid size-11 shrink-0 place-items-center rounded-full border border-white/25 bg-brand-700 font-display text-sm font-bold text-brand-100"
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </span>
+                  className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-brand-300 transition-transform duration-400 ease-out group-hover:scale-x-100"
+                />
+                <div className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-11 shrink-0 place-items-center rounded-full border border-white/25 bg-brand-700 font-display text-sm font-bold text-brand-100 transition-colors duration-300 group-hover:border-brand-300/60 group-hover:bg-brand-600"
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span aria-hidden="true" className="clinical-ticks h-2 flex-1 opacity-20" />
+                </div>
                 <h3 className="mt-5 font-display text-[1.0625rem] font-bold text-white">
                   {step.title}
                 </h3>

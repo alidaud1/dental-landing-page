@@ -5,9 +5,13 @@ import { ButtonLink } from '../ui/Button'
 
 export function FinalCTA() {
   return (
-    <section aria-labelledby="final-cta-title" className="bg-brand-800 py-16 text-white sm:py-20">
-      <Container className="flex flex-col items-center gap-8 text-center lg:flex-row lg:justify-between lg:gap-12 lg:text-left">
-        <div data-reveal>
+    <section aria-labelledby="final-cta-title" className="relative overflow-hidden bg-brand-800 py-16 text-white sm:py-20">
+      <div
+        aria-hidden="true"
+        className="clinical-grid-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(70%_60%_at_50%_50%,black,transparent)]"
+      />
+      <Container className="relative flex flex-col items-center gap-8 text-center lg:flex-row lg:justify-between lg:gap-12 lg:text-left">
+        <div data-reveal="left">
           <h2 id="final-cta-title" className="text-section-title max-w-[18ch] text-white">
             Your next step towards a healthier smile.
           </h2>
@@ -17,7 +21,7 @@ export function FinalCTA() {
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:shrink-0" data-reveal>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:shrink-0" data-reveal="right">
           <ButtonLink href={`#${sectionIds.appointment}`} variant="onDark" size="lg">
             Book an Appointment
           </ButtonLink>

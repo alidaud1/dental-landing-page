@@ -30,7 +30,7 @@ export function Gallery() {
           />
         </div>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-12" data-reveal>
+        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-12" data-reveal-stagger>
           {galleryImages.map((image, index) => (
             <li
               key={image.id}
@@ -41,7 +41,7 @@ export function Gallery() {
               <button
                 type="button"
                 onClick={() => setOpenIndex(index)}
-                className="group relative block h-full w-full overflow-hidden rounded-2xl border border-line bg-brand-50 text-left"
+                className="group relative block h-full w-full overflow-hidden rounded-card border border-line bg-brand-50 text-left"
               >
                 <img
                   src={image.src}
@@ -63,10 +63,17 @@ export function Gallery() {
                 />
 
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
-                  <span className="text-sm font-medium text-white drop-shadow">{image.caption}</span>
+                  <span className="flex flex-col gap-1">
+                    <span aria-hidden="true" className="label-clinical text-white/60">
+                      FIG. {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-sm font-medium text-white drop-shadow">
+                      {image.caption}
+                    </span>
+                  </span>
                   <span
                     aria-hidden="true"
-                    className="grid size-9 shrink-0 place-items-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors group-hover:bg-white/30"
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-[background-color,transform] duration-300 group-hover:scale-110 group-hover:bg-white/30"
                   >
                     <Maximize2 className="size-4" />
                   </span>

@@ -43,7 +43,7 @@ export function PatientConcerns() {
     >
       <Container>
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-16">
-          <div data-reveal>
+          <div data-reveal="left">
             <SectionHeading
               id="concerns-title"
               eyebrow="Why people put it off"
@@ -52,7 +52,7 @@ export function PatientConcerns() {
             />
 
             {smileImage && (
-              <div className="mt-9 hidden overflow-hidden rounded-2xl border border-line lg:block">
+              <div className="mt-9 hidden overflow-hidden rounded-card border border-line lg:block">
                 <img
                   src={smileImage.src}
                   width={smileImage.width}
@@ -70,11 +70,11 @@ export function PatientConcerns() {
             </ButtonLink>
           </div>
 
-          <ul className="flex flex-col gap-4" data-reveal>
+          <ul className="flex flex-col gap-4" data-reveal-stagger>
             {concerns.map((item) => (
               <li
                 key={item.worry}
-                className="rounded-2xl border border-line bg-surface-raised p-5 shadow-soft transition-colors hover:border-brand-200 sm:p-6"
+                className="group rounded-card border border-line bg-surface-raised p-5 shadow-soft transition-[border-color,transform] duration-300 hover:-translate-x-0.5 hover:border-brand-300 sm:p-6"
               >
                 <p className="font-display text-[1.0625rem] font-bold text-ink">{item.worry}</p>
                 <p className="mt-2.5 flex gap-2.5 text-[0.9375rem] leading-relaxed text-ink-muted">

@@ -111,7 +111,7 @@ export function AppointmentForm({ enquiry }: AppointmentFormProps) {
       ref={formRef}
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-[1.5rem] border border-line bg-surface-raised p-6 shadow-soft sm:p-8"
+      className="rounded-panel border border-line bg-surface-raised p-6 shadow-soft sm:p-8"
     >
       <h3 className="font-display text-xl font-bold">Request an appointment</h3>
       <p className="mt-2 text-sm leading-relaxed text-ink-muted">
@@ -331,7 +331,7 @@ export function AppointmentForm({ enquiry }: AppointmentFormProps) {
       </div>
 
       {appointmentMode === 'demo' && status === 'idle' && (
-        <p className="mt-5 flex gap-2 rounded-xl bg-accent-soft px-4 py-3 text-xs leading-relaxed text-accent">
+        <p className="mt-5 flex gap-2 rounded-card border border-accent/20 bg-accent-soft px-4 py-3 text-xs leading-relaxed text-accent">
           <Info className="mt-px size-4 shrink-0" aria-hidden="true" />
           <span>
             <strong>Demo mode.</strong> No appointment backend is configured, so submitting this
@@ -347,7 +347,7 @@ export function AppointmentForm({ enquiry }: AppointmentFormProps) {
 
 function inputClass(hasError: boolean): string {
   return cn(
-    'w-full rounded-xl border bg-surface px-4 py-3 text-[0.9375rem] text-ink transition-colors',
+    'w-full rounded-card border bg-surface px-4 py-3 text-[0.9375rem] text-ink transition-colors',
     'placeholder:text-ink-muted/60 focus:bg-surface-raised',
     hasError
       ? 'border-red-500/70 focus-visible:outline-red-600'
@@ -415,7 +415,7 @@ interface NoticeProps {
 
 function Notice({ tone, icon: IconComponent, title, children }: NoticeProps) {
   return (
-    <div className={cn('rounded-xl border p-4 text-sm leading-relaxed', noticeTones[tone])}>
+    <div className={cn('rounded-card border p-4 text-sm leading-relaxed', noticeTones[tone])}>
       <p className="flex items-center gap-2 font-display font-bold">
         <IconComponent className="size-4 shrink-0" aria-hidden />
         {title}

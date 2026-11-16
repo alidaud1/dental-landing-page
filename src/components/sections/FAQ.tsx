@@ -15,7 +15,7 @@ export function FAQ() {
     >
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <div data-reveal>
+          <div data-reveal="left">
             <SectionHeading
               id="faq-title"
               eyebrow="Questions"
@@ -29,7 +29,7 @@ export function FAQ() {
             </ButtonLink>
           </div>
 
-          <div data-reveal>
+          <div data-reveal="right">
             <Accordion items={faqs} />
           </div>
         </div>

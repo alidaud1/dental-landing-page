@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, Ref, ReactNode } from 'react'
 import { cn } from '../../lib/cn'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'onDark'
@@ -29,8 +29,12 @@ interface CommonProps {
   children: ReactNode
 }
 
-type ButtonProps = CommonProps & ButtonHTMLAttributes<HTMLButtonElement>
-type LinkProps = CommonProps & AnchorHTMLAttributes<HTMLAnchorElement>
+/* React 19 passes `ref` as an ordinary prop, so these forward it without
+   forwardRef — the motion hooks need a handle on the real DOM node. */
+type ButtonProps = CommonProps &
+  ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> }
+type LinkProps = CommonProps &
+  AnchorHTMLAttributes<HTMLAnchorElement> & { ref?: Ref<HTMLAnchorElement> }
 
 /** Use for actions — submitting, opening a dialog, toggling state. */
 export function Button({ variant = 'primary', size = 'md', className, children, ...rest }: ButtonProps) {

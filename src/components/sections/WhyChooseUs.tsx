@@ -56,18 +56,28 @@ export function WhyChooseUs() {
           />
         </div>
 
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-reveal>
-          {pillars.map((pillar) => (
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
+          {pillars.map((pillar, index) => (
             <li
               key={pillar.title}
-              className="group rounded-2xl border border-line bg-surface-raised p-6 shadow-soft transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lift"
+              className="group relative overflow-hidden rounded-card border border-line bg-surface-raised p-6 shadow-soft transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-lift"
             >
               <span
                 aria-hidden="true"
-                className="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white"
-              >
-                <Icon name={pillar.icon} className="size-5" />
-              </span>
+                className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-brand-500 transition-transform duration-400 ease-out group-hover:scale-x-100"
+              />
+
+              <div className="flex items-start justify-between">
+                <span
+                  aria-hidden="true"
+                  className="grid size-11 place-items-center rounded-card bg-brand-50 text-brand-600 transition-colors duration-300 group-hover:bg-brand-600 group-hover:text-white"
+                >
+                  <Icon name={pillar.icon} className="size-5" />
+                </span>
+                <span aria-hidden="true" className="label-clinical text-line-strong">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
               <h3 className="mt-5 font-display text-[1.0625rem] font-bold">{pillar.title}</h3>
               <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-muted">{pillar.body}</p>
             </li>

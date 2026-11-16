@@ -1,31 +1,46 @@
 import { useEffect } from 'react'
+import { prefersReducedMotion } from '../lib/motion'
 
 /** Nothing stays hidden longer than this, whatever the observer does. */
 const SAFETY_REVEAL_MS = 2500
 
 /**
- * Reveals `[data-reveal]` elements as they enter the viewport.
+ * Reveals `[data-reveal]` and `[data-reveal-stagger]` elements as they scroll
+ * into view, and sets `--i` on staggered children so they resolve in sequence.
  *
  * Three guards keep content from ever being stuck invisible, which matters far
- * more than the animation itself:
+ * more than the animation does:
  *
- *   1. The hiding styles live behind a `.reveal-ready` class that this hook
- *      adds to <html>, so if JS never runs — or IntersectionObserver is
- *      missing — nothing is hidden in the first place.
- *   2. A generous rootMargin triggers the reveal before an element scrolls
- *      into view, so fast scrolling and anchor jumps cannot outrun it.
+ *   1. The hiding styles sit behind a `.reveal-ready` class this hook adds to
+ *      <html>, so if JS never runs — or IntersectionObserver is missing —
+ *      nothing is hidden in the first place.
+ *   2. A generous rootMargin triggers the reveal before an element reaches the
+ *      viewport, so fast scrolling and anchor jumps cannot outrun it.
  *   3. A timer reveals anything still hidden after a few seconds, covering
- *      cases the observer does not report at all (restored scroll positions,
- *      print, background tabs).
+ *      cases the observer never reports (restored scroll positions, print,
+ *      background tabs).
  */
 export function useScrollReveal(): void {
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
+    // Under reduced motion we skip the machinery entirely rather than
+    // animating to a no-op: no class, no observer, no listeners.
+    if (prefersReducedMotion()) return
 
     const root = document.documentElement
     root.classList.add('reveal-ready')
 
-    const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal-stagger]'),
+    )
+
+    // Index staggered children once, up front.
+    for (const target of targets) {
+      if (!target.hasAttribute('data-reveal-stagger')) continue
+      Array.from(target.children).forEach((child, index) => {
+        ;(child as HTMLElement).style.setProperty('--i', String(index))
+      })
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {

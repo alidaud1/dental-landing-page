@@ -68,7 +68,7 @@ export function Accordion({ items, defaultOpenId }: AccordionProps) {
                  the closed panel out of the tab order and the a11y tree. */
               inert={!isOpen}
               className={cn(
-                'grid transition-[grid-template-rows] duration-300 ease-out',
+                'grid transition-[grid-template-rows] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]',
                 isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
               )}
             >

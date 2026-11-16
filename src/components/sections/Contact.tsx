@@ -31,8 +31,8 @@ export function Contact({ enquiry }: ContactProps) {
           id={sectionIds.appointment}
           className="mt-12 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12"
         >
-          <div className="flex flex-col gap-5" data-reveal>
-            <ul className="flex flex-col gap-5 rounded-[1.5rem] border border-line bg-surface-raised p-6 shadow-soft sm:p-8">
+          <div className="flex flex-col gap-5" data-reveal="left">
+            <ul className="flex flex-col gap-5 rounded-panel border border-line bg-surface-raised p-6 shadow-soft sm:p-8">
               <ContactRow icon={MapPin} label="Address">
                 <address className="not-italic">
                   {clinic.address.street}
@@ -86,13 +86,13 @@ export function Contact({ enquiry }: ContactProps) {
               patients to the wrong place. The directions link runs a search
               for the clinic by name and address instead.
             */}
-            <p className="rounded-xl border border-line bg-surface-mint px-4 py-3 text-xs leading-relaxed text-ink-muted">
+            <p className="rounded-card border border-line bg-surface-mint px-4 py-3 text-xs leading-relaxed text-ink-muted">
               The directions link opens a Google Maps search for the clinic. Please confirm the
               exact location by phone before travelling a long distance.
             </p>
           </div>
 
-          <div data-reveal>
+          <div data-reveal="right">
             <AppointmentForm enquiry={enquiry} />
           </div>
         </div>
@@ -114,7 +114,7 @@ function ContactRow({
     <li className="flex gap-4">
       <span
         aria-hidden="true"
-        className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"
+        className="grid size-10 shrink-0 place-items-center rounded-card bg-brand-50 text-brand-600"
       >
         <IconComponent className="size-5" strokeWidth={1.7} aria-hidden />
       </span>
