@@ -1,0 +1,42 @@
+# Lives on the VPS at /opt/jaskani/docker-compose.yml.
+#
+# The image is built and pushed by GitHub Actions; this file only pulls and
+# runs it. The deploy step is therefore just:
+#
+#   docker compose pull && docker compose up -d
+#
+# which is fast and atomic enough that visitors see at most a sub-second blip.
+
+services:
+  web:
+    # IMAGE_TAG lets a deploy pin an exact commit, and lets you roll back by
+    # re-running with an older tag. Defaults to latest for manual use.
+    image: ghcr.io/alidaud1/dental-landing-page:${IMAGE_TAG:-latest}
+    container_name: jaskani-web
+    restart: unless-stopped
+
+    # Bound to loopback on purpose: the container is never reachable from the
+    # internet directly. Host nginx terminates TLS and proxies to it.
+    ports:
+      - '127.0.0.1:8080:8080'
+
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://127.0.0.1:8080/healthz']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    # Static file server: it needs no write access and no extra privileges.
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

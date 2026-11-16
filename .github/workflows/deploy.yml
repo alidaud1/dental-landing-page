@@ -1,0 +1,206 @@
+name: Deploy
+
+# Every push to main builds an image, pushes it to GHCR, and tells the VPS to
+# pull it. CI checks for pull requests live in ci.yml — keeping them separate
+# means a merge to main runs one workflow, not two.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy (leave blank to build from this commit). Use a previous commit SHA to roll back.'
+        required: false
+        type: string
+
+concurrency:
+  # Never let two deploys race. A newer push supersedes an in-flight build, but
+  # an in-flight *deploy* is allowed to finish so the VPS is never left
+  # half-updated.
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ---------------------------------------------------------------------
+  build:
+    name: Build and push image
+    runs-on: ubuntu-latest
+    # Skipped entirely when rolling back to an existing tag.
+    if: github.event_name == 'push' || inputs.image_tag == ''
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.short_sha }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute image tag
+        id: meta
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Warn if the appointment form will ship in demo mode
+        run: |
+          if [ -z "${{ vars.VITE_WEB3FORMS_KEY }}" ]; then
+            echo "::warning title=Appointment form is in demo mode::VITE_WEB3FORMS_KEY repository variable is not set, so the live form will tell visitors their request was NOT sent. See DEPLOYMENT.md step 4."
+          else
+            echo "Appointment form will be live."
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.short_sha }}
+          build-args: |
+            VITE_WEB3FORMS_KEY=${{ vars.VITE_WEB3FORMS_KEY }}
+            VITE_APPOINTMENT_ENDPOINT=${{ vars.VITE_APPOINTMENT_ENDPOINT }}
+          # Layer cache lives in the GitHub Actions cache, so repeat builds
+          # only redo the steps that actually changed.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ---------------------------------------------------------------------
+  not-configured:
+    name: Deployment not configured
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always() && vars.SITE_DOMAIN == ''
+    steps:
+      - run: |
+          echo "::notice title=Deploy skipped::The image was built and pushed, but no VPS is configured yet. Set the SITE_DOMAIN repository variable (and the VPS_* secrets) to enable deployment — see DEPLOYMENT.md."
+          {
+            echo "### Deploy skipped"
+            echo ""
+            echo "The image built and pushed successfully, but \`SITE_DOMAIN\` is not set,"
+            echo "so there is no VPS to deploy to yet."
+            echo ""
+            echo "See [DEPLOYMENT.md](../blob/main/DEPLOYMENT.md) steps 3 and 4."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: [build]
+    # Three conditions:
+    #   - build succeeded, or was skipped because this is a rollback
+    #   - SITE_DOMAIN is set, which is the marker that step 3/4 of
+    #     DEPLOYMENT.md have been done. Before that the job skips cleanly
+    #     rather than failing red on every push and training you to ignore it.
+    # Secrets cannot be referenced in a job-level `if`, so the secret check
+    # stays as the first step and fails loudly once deployment IS configured.
+    if: |
+      always()
+      && (needs.build.result == 'success' || needs.build.result == 'skipped')
+      && vars.SITE_DOMAIN != ''
+    environment:
+      name: production
+      url: https://${{ vars.SITE_DOMAIN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required configuration
+        run: |
+          missing=""
+          if [ -z "${{ secrets.VPS_HOST }}" ];    then missing="$missing VPS_HOST"; fi
+          if [ -z "${{ secrets.VPS_SSH_KEY }}" ]; then missing="$missing VPS_SSH_KEY"; fi
+          if [ -z "${{ vars.SITE_DOMAIN }}" ];    then missing="$missing SITE_DOMAIN"; fi
+          if [ -n "$missing" ]; then
+            echo "::error title=Deployment not configured::Missing:$missing — see DEPLOYMENT.md step 3."
+            exit 1
+          fi
+
+      - name: Resolve image tag
+        id: tag
+        run: |
+          TAG="${{ inputs.image_tag }}"
+          if [ -z "$TAG" ]; then TAG="${{ needs.build.outputs.tag }}"; fi
+          if [ -z "$TAG" ]; then TAG="latest"; fi
+          echo "value=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Deploying tag: $TAG"
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+
+          if [ -n "${{ secrets.VPS_KNOWN_HOSTS }}" ]; then
+            printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          else
+            # Trust-on-first-use. Works, but pins nothing: set the
+            # VPS_KNOWN_HOSTS secret to protect against a MITM on the runner's
+            # first connection. See DEPLOYMENT.md step 3.
+            echo "::warning title=Host key not pinned::VPS_KNOWN_HOSTS is not set; falling back to ssh-keyscan."
+            ssh-keyscan -p "${{ secrets.VPS_PORT || 22 }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Pull and restart on the VPS
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          # The remote script is piped in from the repo rather than embedded in
+          # a heredoc: a heredoc terminator must sit at column 0, which would
+          # end this YAML block scalar.
+          ssh -i ~/.ssh/id_deploy \
+              -p "${{ secrets.VPS_PORT || 22 }}" \
+              -o BatchMode=yes \
+              -o ConnectTimeout=15 \
+              "${{ secrets.VPS_USER || 'deploy' }}@${{ secrets.VPS_HOST }}" \
+              "IMAGE_TAG='$IMAGE_TAG' bash -s" < deploy/remote-deploy.sh
+
+      - name: Verify the live site
+        run: |
+          DOMAIN="${{ vars.SITE_DOMAIN }}"
+          echo "Checking https://$DOMAIN ..."
+          for i in $(seq 1 10); do
+            CODE=$(curl -sS -o /tmp/body -w '%{http_code}' --max-time 15 "https://$DOMAIN/" || echo '000')
+            if [ "$CODE" = "200" ]; then break; fi
+            echo "  attempt $i: HTTP $CODE"
+            sleep 3
+          done
+
+          if [ "$CODE" != "200" ]; then
+            echo "::error title=Live site check failed::https://$DOMAIN returned $CODE after deploy."
+            exit 1
+          fi
+
+          # A 200 that serves the wrong page is still a failed deploy.
+          if ! grep -q "Jaskani" /tmp/body; then
+            echo "::error title=Unexpected content::Site responded 200 but the page body does not look like the clinic site."
+            exit 1
+          fi
+
+          echo "Live site OK (HTTP 200, expected content)."
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Deployment"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Tag | \`${{ steps.tag.outputs.value }}\` |"
+            echo "| Site | https://${{ vars.SITE_DOMAIN }} |"
+            echo "| Form | ${{ vars.VITE_WEB3FORMS_KEY != '' && 'live (Web3Forms)' || '**demo mode — no key set**' }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -189,11 +189,24 @@ components — change the palette in that one block.
 
 ## Deploying
 
-The build output in `dist/` is static — deploy it to Vercel, Netlify, Cloudflare
-Pages or any static host.
+Production runs on a Hostinger VPS: GitHub Actions builds a Docker image, pushes
+it to GHCR, and the VPS pulls and restarts. Push to `main` and it deploys.
+
+**See [`DEPLOYMENT.md`](./DEPLOYMENT.md)** for the one-time setup (~15 minutes),
+rollback, and troubleshooting.
 
 ```bash
-npm run build
+# Build and run the production image locally
+docker build --build-arg VITE_WEB3FORMS_KEY=your-key -t jaskani .
+docker run --rm -p 8080:8080 jaskani
+# http://localhost:8080
+```
+
+The output is plain static files, so it also deploys unchanged to Vercel,
+Netlify or Cloudflare Pages if you ever want to move off the VPS:
+
+```bash
+npm run build   # -> dist/
 ```
 
 ### CI

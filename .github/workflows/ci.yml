@@ -1,10 +1,12 @@
 name: CI
 
+# Pull requests only. Pushes to main are verified by deploy.yml, which builds
+# the same code into the production image — running both would double the work
+# for no extra signal.
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   verify:
@@ -34,9 +36,5 @@ jobs:
           # the form just falls back to demo mode.
           VITE_WEB3FORMS_KEY: ${{ vars.VITE_WEB3FORMS_KEY }}
 
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
-          retention-days: 7
+      - name: Verify the image builds
+        run: docker build -t ci-check .

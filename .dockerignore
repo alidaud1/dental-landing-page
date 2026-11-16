@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.github
+.env
+.env.*
+!.env.example
+*.log
+.vscode
+.idea
+.DS_Store
+README.md
+CONTENT_REVIEW.md
+DEPLOYMENT.md
+dentocorrect_react_website_build_brief.md
