@@ -56,15 +56,32 @@ const CALL_INSTEAD = 'Please call the clinic instead.'
 export async function submitAppointment(draft: AppointmentDraft): Promise<SubmitResult> {
   if (appointmentMode === 'demo') return { status: 'demo' }
 
-  const url = web3formsKey ? WEB3FORMS_URL : customEndpoint!
-  const body = web3formsKey ? web3formsPayload(draft, web3formsKey) : jsonPayload(draft)
-
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(body),
-    })
+    const response = web3formsKey
+      ? await fetch(WEB3FORMS_URL, {
+          method: 'POST',
+          /*
+           * FormData, not JSON — and deliberately so.
+           *
+           * `Content-Type: application/json` makes this a non-simple
+           * cross-origin request, so the browser sends a CORS preflight first.
+           * Web3Forms answers OPTIONS with a 403 and no Access-Control-Allow-*
+           * headers, so the real POST never leaves the browser and the fetch
+           * rejects with an opaque network error.
+           *
+           * multipart/form-data is a "simple" content type: no preflight, the
+           * POST goes straight out. This is why the official Web3Forms snippet
+           * uses FormData. Do not set a Content-Type header here — the browser
+           * must set it itself to include the multipart boundary.
+           */
+          headers: { Accept: 'application/json' },
+          body: toFormData(web3formsPayload(draft, web3formsKey)),
+        })
+      : await fetch(customEndpoint!, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(jsonPayload(draft)),
+        })
 
     // Web3Forms answers 200 with { success: false } for a rejected key or a
     // tripped spam filter, so the status code alone is not enough.
@@ -103,6 +120,12 @@ export async function submitAppointment(draft: AppointmentDraft): Promise<Submit
 
 /* ------------------------------------------------------------------ */
 
+function toFormData(fields: Record<string, string>): FormData {
+  const form = new FormData()
+  for (const [key, value] of Object.entries(fields)) form.append(key, value)
+  return form
+}
+
 function jsonPayload(draft: AppointmentDraft) {
   return {
     name: draft.name.trim(),
@@ -120,7 +143,7 @@ function jsonPayload(draft: AppointmentDraft) {
  * Web3Forms emails every field it receives, using the key order below, so the
  * labels are written for whoever reads the email rather than for a database.
  */
-function web3formsPayload(draft: AppointmentDraft, accessKey: string) {
+function web3formsPayload(draft: AppointmentDraft, accessKey: string): Record<string, string> {
   return {
     access_key: accessKey,
     subject: `Appointment request — ${draft.name.trim()} (${draft.service})`,
