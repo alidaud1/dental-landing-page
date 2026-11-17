@@ -177,6 +177,24 @@ returns the clinic site.
 
 Then open `https://dental.yourdomain.com`.
 
+### After the first successful deploy
+
+Update the form's registered URL in the Web3Forms dashboard → your form →
+**Form Details** → from `http://localhost:5173/#appointment` to:
+
+```
+https://dental.yourdomain.com/#appointment
+```
+
+This field is a label used to identify the form in the dashboard, not an
+access restriction — submissions are not blocked by origin — so it is
+cosmetic. Worth doing anyway so the dashboard is not misleading later.
+
+Then submit one real request on the live site and confirm it arrives at
+`farmanbaloch47466@gmail.com`. Testing the production build matters
+separately from the local one: the key is baked in at build time, so a
+working local form proves nothing about what the deployed image contains.
+
 ---
 
 ## Rolling back
