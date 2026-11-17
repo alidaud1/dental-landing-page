@@ -150,6 +150,7 @@ Same page, **Variables** tab (not Secrets):
 | Variable | Value | Why |
 |---|---|---|
 | `SITE_DOMAIN` | `jaskani.techtrigger.org` | Used by the post-deploy health check |
+| `DEPLOY_TO_VPS` | `true` | **The on/off switch.** Leave unset until steps 2 and 3 are done; deploys skip cleanly until then |
 | `VITE_WEB3FORMS_KEY` | `a7eea725-1feb-4bcd-b7b8-624f972b2c2d` | **Already set.** Without it the live form runs in demo mode |
 
 ### The build-time gotcha
@@ -189,7 +190,20 @@ rebuild. Editing anything in this repo will not redirect the emails.
 
 ---
 
-## Step 5 — Deploy
+## Step 5 — Turn deployment on
+
+Only once steps 2 and 3 are complete, set the switch:
+
+```bash
+gh variable set DEPLOY_TO_VPS --body true --repo alidaud1/dental-landing-page
+```
+
+Until this is `true`, every push builds and publishes the image but skips the
+deploy with a notice. That keeps the setup period green instead of failing on
+every commit — but it also means **nothing reaches the server until you flip
+it**. After it is on, a missing secret is a hard failure, which is correct.
+
+Then trigger a run:
 
 ```bash
 git commit --allow-empty -m "Trigger first deploy"
