@@ -60,8 +60,9 @@ fi
 
 echo "Container healthy."
 
-# Keep the disk tidy. Images still referenced by a tag are untouched, so the
-# rollback targets from recent deploys survive.
-docker image prune -af --filter 'until=168h' >/dev/null 2>&1 || true
+# Keep the disk tidy — but only dangling (untagged) layers. `prune -a` would
+# remove any tagged image without a running container, which on a shared
+# server means other projects' images, not just ours.
+docker image prune -f >/dev/null 2>&1 || true
 
 echo "Deploy complete: ${IMAGE_TAG}"

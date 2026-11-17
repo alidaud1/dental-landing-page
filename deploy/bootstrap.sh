@@ -106,6 +106,12 @@ fi
 
 if command -v nginx >/dev/null 2>&1; then
   ok "nginx already installed — existing sites will not be touched"
+  OTHER_SITES="$(find /etc/nginx/sites-enabled -type l -o -type f 2>/dev/null \
+    | grep -vE '/(default|jaskani)$' | xargs -r -n1 basename | tr '\n' ' ')"
+  if [[ -n "${OTHER_SITES// /}" ]]; then
+    warn "this server already serves other sites: ${OTHER_SITES}"
+    warn "they are left alone — only a new 'jaskani' site is added."
+  fi
 else
   log "Installing nginx"
   apt-get install -y -qq nginx >/dev/null
@@ -293,10 +299,22 @@ log "Configuring firewall"
 if (
   ufw allow OpenSSH >/dev/null 2>&1 || ufw allow 22/tcp >/dev/null 2>&1
 ) && ufw allow 80/tcp >/dev/null 2>&1 && ufw allow 443/tcp >/dev/null 2>&1; then
-  if ! ufw status 2>/dev/null | grep -q '^Status: active'; then
-    ufw --force enable >/dev/null 2>&1 || warn "could not enable ufw — check 'ufw status' manually"
+  ok "firewall rules added for 22, 80, 443"
+
+  if ufw status 2>/dev/null | grep -q '^Status: active'; then
+    ok "firewall already active"
+  elif [[ "${ENABLE_FIREWALL:-no}" == "yes" ]]; then
+    ufw --force enable >/dev/null 2>&1 && ok "firewall enabled" \
+      || warn "could not enable ufw — check 'ufw status' manually"
+  else
+    # Turning a firewall on for the first time is a behaviour change for
+    # EVERY service on the box, not just this one. On a shared server that
+    # can take an unrelated site offline, so it is opt-in.
+    warn "ufw is currently inactive and was NOT enabled."
+    warn "Rules for 22/80/443 are staged. If other services on this server use"
+    warn "different ports, allow those first, then run: ufw enable"
+    warn "Or re-run this script with ENABLE_FIREWALL=yes to turn it on now."
   fi
-  ok "firewall allows 22, 80, 443 only"
 else
   warn "could not configure ufw. Set the firewall manually: allow 22, 80, 443; deny the rest."
 fi

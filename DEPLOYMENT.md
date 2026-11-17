@@ -76,7 +76,24 @@ something fails you can fix the cause and run it again.
 On the first run it will warn that it cannot pull the image yet — that is
 expected, because Actions has not pushed one. It gets resolved by step 4.
 
-It will **not** disturb other sites already served by nginx on that box.
+### If the server already hosts other sites
+
+This VPS (31.97.188.80) already serves another production site, so the script
+is deliberately conservative:
+
+- It only adds a new `jaskani` nginx site. Other `sites-enabled` entries are
+  untouched, and the script lists any it finds so nothing is a surprise.
+- It removes `sites-enabled/default` — the stock nginx welcome page — only if
+  that is still a symlink to Debian's default.
+- Certbot is called with `-d <your domain>` only, so no existing certificate
+  is touched or renewed differently.
+- **It stages firewall rules but does not switch ufw on.** Enabling a firewall
+  for the first time changes behaviour for every service on the box, which on
+  a shared server can take an unrelated site offline. Allow any other ports
+  you need first, then run `ufw enable` yourself — or re-run the script with
+  `ENABLE_FIREWALL=yes`.
+- Image cleanup prunes only dangling layers, never tagged images belonging to
+  other projects.
 
 ---
 
