@@ -19,32 +19,40 @@ restarts. No manual step after the one-time setup below.
 
 ---
 
-## Before you start
+## This deployment
 
-You need:
+| | |
+|---|---|
+| VPS | `31.97.188.80` (Hostinger, Ubuntu 22.04, nginx 1.18 already installed) |
+| Hostname | `jaskani.techtrigger.org` |
+| DNS | Managed at Hostinger (`ns1/ns2.dns-parking.com`) |
+| Image | `ghcr.io/alidaud1/dental-landing-page` |
+| Form email | `farmanbaloch47466@gmail.com` via Web3Forms |
 
-- A **Hostinger VPS** (not shared web hosting — shared plans cannot run Docker)
-- A **domain or subdomain** you control the DNS for
-- SSH root access to the VPS
+> **This VPS already hosts `dagcai.com`.** Everything below is written to leave
+> it alone — see "If the server already hosts other sites" under step 2.
+
+> `techtrigger.org` itself resolves to Hostinger shared hosting, not this VPS.
+> Adding a subdomain A record does not affect the main site.
 
 ---
 
 ## Step 1 — Point DNS at the VPS
 
-In Hostinger's DNS editor for your domain, add an **A record**:
+In **hPanel → Domains → techtrigger.org → DNS / Nameservers**, add:
 
 | Type | Name | Points to | TTL |
 |---|---|---|---|
-| A | `dental` | your VPS IP address | 14400 (default) |
+| A | `jaskani` | `31.97.188.80` | 14400 |
 
-That gives you `dental.yourdomain.com`. Use `@` instead of `dental` if you want
-the root domain.
+Leave every existing record alone — the root `A` records and the `www` CNAME
+point at Hostinger shared hosting and must stay as they are.
 
 Wait for it to propagate before step 2 — usually a few minutes:
 
 ```bash
-dig +short dental.yourdomain.com
-# should print your VPS IP
+dig +short jaskani.techtrigger.org
+# must print 31.97.188.80
 ```
 
 > Certbot cannot issue a certificate until this resolves to the VPS. The
@@ -62,7 +70,7 @@ curl -fsSL https://raw.githubusercontent.com/alidaud1/dental-landing-page/main/d
 # Read it before running it — never pipe a remote script straight into bash.
 less bootstrap.sh
 
-sudo DOMAIN=dental.yourdomain.com EMAIL=you@yourdomain.com bash bootstrap.sh
+sudo DOMAIN=jaskani.techtrigger.org EMAIL=ahmed.media71@gmail.com bash bootstrap.sh
 ```
 
 It installs Docker, nginx and certbot (skipping anything already present),
@@ -141,8 +149,8 @@ Same page, **Variables** tab (not Secrets):
 
 | Variable | Value | Why |
 |---|---|---|
-| `SITE_DOMAIN` | `dental.yourdomain.com` | Used by the post-deploy health check |
-| `VITE_WEB3FORMS_KEY` | Your Web3Forms access key | **Without this the live form runs in demo mode** |
+| `SITE_DOMAIN` | `jaskani.techtrigger.org` | Used by the post-deploy health check |
+| `VITE_WEB3FORMS_KEY` | `a7eea725-1feb-4bcd-b7b8-624f972b2c2d` | **Already set.** Without it the live form runs in demo mode |
 
 ### The build-time gotcha
 
@@ -192,7 +200,7 @@ Watch it in the Actions tab. It will build, push to GHCR, pull on the VPS, wait
 for the container to report healthy, and then verify the live URL actually
 returns the clinic site.
 
-Then open `https://dental.yourdomain.com`.
+Then open `https://jaskani.techtrigger.org`.
 
 ### After the first successful deploy
 
@@ -200,7 +208,7 @@ Update the form's registered URL in the Web3Forms dashboard → your form →
 **Form Details** → from `http://localhost:5173/#appointment` to:
 
 ```
-https://dental.yourdomain.com/#appointment
+https://jaskani.techtrigger.org/#appointment
 ```
 
 This field is a label used to identify the form in the dashboard, not an
@@ -274,7 +282,7 @@ nginx is up but the container is not. `docker compose ps` and
 
 **Certbot failed during bootstrap**
 Almost always DNS not yet pointing at the VPS, or port 80 blocked. Fix, then:
-`sudo certbot --nginx -d dental.yourdomain.com --agree-tos -m you@yourdomain.com --redirect`
+`sudo certbot --nginx -d jaskani.techtrigger.org --agree-tos -m ahmed.media71@gmail.com --redirect`
 
 **Actions fails at "Check required configuration"**
 A secret or variable is missing — the error message names which one.
