@@ -144,10 +144,16 @@ Setup takes about 30 seconds and needs no account or server:
 The form then switches to real delivery automatically and reports genuine
 success and failure. See `README.md` for detail.
 
-**Destination address:** currently set up for testing against
-`alivirad54321@gmail.com`. **Confirm the clinic's own address before launch** —
-requests going to a developer's inbox instead of the clinic's is the kind of
-thing that gets missed until a patient complains they were never called back.
+**Destination address:** `farmanbaloch47466@gmail.com`, supplied by the client.
+
+Two things still to confirm with the clinic:
+
+1. **Who actually monitors this inbox, and during what hours?** The form tells
+   patients the clinic will call them back, so somebody has to be reading it.
+   An unwatched inbox is worse than no form — the patient believes they are in
+   the queue and never hears back.
+2. **Should a second address be copied in?** Web3Forms supports a CC. If only
+   one person reads this inbox, requests are missed whenever they are away.
 
 Also confirm: who monitors incoming requests, and during what hours? The form
 currently promises a call back, so somebody needs to be making those calls.

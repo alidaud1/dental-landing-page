@@ -139,10 +139,28 @@ container starts. Consequences:
 The workflow warns you in the build log and the run summary if the key is
 missing, so this fails loudly rather than silently.
 
-Get a key free at <https://web3forms.com> — enter the destination email, click
-the confirmation link, paste the key. It is public-by-design (it only permits
-sending to that one confirmed address), which is why it is a variable rather
-than a secret.
+### Getting the key
+
+The destination email is **not** stored in this codebase — it is whatever
+address the key was registered against. For this site that is
+`farmanbaloch47466@gmail.com` (client-supplied).
+
+1. Go to <https://web3forms.com>
+2. Enter `farmanbaloch47466@gmail.com` in the "Create Access Key" box
+3. **The client clicks the confirmation link in that inbox.** You cannot do
+   this step for them — Web3Forms will not issue the key until the address is
+   confirmed by whoever owns it.
+4. The client sends you the key; paste it into the `VITE_WEB3FORMS_KEY`
+   repository variable
+
+The key is public-by-design — it only permits sending to that one confirmed
+address and cannot read past submissions — which is why it is a variable
+rather than a secret.
+
+### Changing the destination later
+
+Register a new key against the new address and replace the variable, then
+rebuild. Editing anything in this repo will not redirect the emails.
 
 ---
 
