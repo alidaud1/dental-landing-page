@@ -38,7 +38,7 @@ These appeared on the old site. None are on the new one.
 | 2.5 | **Google Maps location** | "Get directions" runs a Maps **search** for the clinic name and address. There is **no map embed and no pinned coordinate**, because an unverified pin would send patients to the wrong place. | Send the clinic's real Google Business profile link or Place ID. Then a proper pin and embed can be added. |
 | 2.6 | **Service list** | All 12 services from the old site are shown. | Confirm all 12 are currently offered, and that nothing is missing. |
 | 2.7 | **Service descriptions** | Written to be informational, not diagnostic — they describe what a treatment generally involves, never that it suits a particular patient. | A dentist should read these for clinical accuracy. |
-| 2.8 | **Dentist / team details** | Nothing is published. | The site would be noticeably stronger with the dentist's name, qualifications and a photo. Send these if you would like them added. |
+| 2.8 | **Dentist / team details** | **Partly resolved.** An "Our Dentists" section now publishes real photographs of Dr Farman, Dr Usama Rehman and Dr Adnan. | Still needed: each dentist's **qualifications** (BDS, FCPS, etc.), **PMDC registration numbers**, the exact title for Dr Farman and Dr Adnan, and any special interests. See §9. |
 | 2.9 | **Social profiles** | No social links anywhere — none were found, and fake ones are worse than none. | Send real profile URLs if they exist. |
 | 2.10 | **Production domain** | No `canonical` tag and no sitemap, because the final URL is unknown. `robots.txt` has the sitemap line commented out. | Confirm the domain, then canonical, `og:url` and a sitemap can be added. |
 
@@ -105,18 +105,27 @@ here. The gallery carries a visible note: *"These images show the clinic, its
 instruments and general dental care. No photograph on this page shows a patient
 or a member of the clinic team."*
 
+### Dentist portraits — supplied and in use
+
+Three real photographs of the clinic's dentists have been supplied by the
+client and are published in the "Our Dentists" section. These are genuine
+photographs of the people who actually practise here, which is what the
+removed stock photo never was.
+
+They were cropped to one 4:5 portrait ratio and framed identically, because
+the three were shot against different backdrops (navy, mauve and grey) and
+would otherwise read as three unrelated images. The originals are untouched in
+`public/`.
+
 ### What is still needed
 
-1. **A photograph of the actual dentist.** This is the single highest-value
-   addition left on the site. A real photo of the male dentist who practises
-   here beats any stock image for trust, and would go straight into the hero.
-   Send it along with his name and qualifications and an "About the dentist"
-   block can be added.
-2. **Real clinic photographs** — reception, other treatment rooms, equipment,
-   the team. These would replace the two remaining stock images.
-3. **Licensing confirmation** for the two stock images. They came from the
+1. **Real clinic photographs** — reception, other treatment rooms, equipment.
+   These would replace the two remaining stock images (instruments, smile).
+2. **Licensing confirmation** for those two stock images. They came from the
    previous site, which is not proof of a licence. If there is none, they must
    be replaced before launch.
+3. **Consent for the dentist portraits.** Confirm all three are happy for
+   their photographs to be published on the website.
 
 Patient photographs require written consent and must never be published
 without it.
@@ -184,3 +193,35 @@ hours and services only.
 Deliberately omitted: `aggregateRating`, `review`, `geo` coordinates,
 `priceRange`, `sameAs`. Search engines treat fabricated review markup as a
 manual-action-worthy violation, so **do not add these without real data.**
+
+---
+
+## 9. Dentist details — read before launch
+
+The "Our Dentists" section publishes three names, three roles and a short line
+about each. Here is exactly what that is based on, so you can see what still
+needs checking.
+
+| Published | Basis | Status |
+|---|---|---|
+| The three names | Supplied by the client with the photographs | Confirm spelling, and whether any prefer a fuller name |
+| "Dental Surgeon" — Dr Usama Rehman | Embroidered on his scrubs in the supplied photograph | Reasonably evidenced, but confirm |
+| "Dentist" — Dr Farman, Dr Adnan | Generic. No title was supplied for either | **Confirm their actual titles** |
+| The one-line descriptions | **Written by us.** They describe what a dentist at this clinic does — consultations, restorative work, routine care — and deliberately claim no qualification, experience or specialism | **Replace with real biographies** |
+
+### Deliberately not published
+
+None of the following appears anywhere on the site, because none was supplied:
+
+- Degrees (BDS, FCPS, MDS…)
+- **PMDC registration numbers**
+- Years in practice
+- Specialisms or special interests
+- Memberships, awards or training
+
+For a healthcare provider these are the highest-risk claims on a website — a
+regulator will treat an unearned credential very differently from a loose
+marketing phrase. Send the real details and they go in; until then the section
+stays modest rather than guessing.
+
+Everything above is edited in one file: `src/data/team.ts`.

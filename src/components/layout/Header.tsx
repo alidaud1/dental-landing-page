@@ -55,10 +55,10 @@ export function Header() {
             : 'border-b border-transparent bg-surface',
         )}
       >
-        <Container className="flex h-(--spacing-header) items-center justify-between gap-6">
+        <Container className="flex h-(--spacing-header) items-center justify-between gap-4">
           <Logo />
 
-          <nav aria-label="Primary" className="max-lg:hidden">
+          <nav aria-label="Primary" className="min-w-0 max-lg:hidden">
             <ul className="flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = activeSection === link.href.slice(1)
@@ -68,7 +68,7 @@ export function Header() {
                       href={link.href}
                       aria-current={isActive ? 'true' : undefined}
                       className={cn(
-                        'group relative inline-flex min-h-10 items-center rounded-full px-3.5 text-[0.9375rem] font-medium transition-colors lg:px-4',
+                        'group relative inline-flex min-h-10 items-center rounded-full px-3 text-[0.9375rem] font-medium whitespace-nowrap transition-colors xl:px-3.5',
                         isActive ? 'text-brand-700' : 'text-ink-soft hover:text-brand-700',
                       )}
                     >
@@ -89,11 +89,11 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <ButtonLink
               href={clinic.phone.href}
               variant="secondary"
-              className="max-lg:hidden"
+              className="max-xl:hidden"
               aria-label={`Call the clinic on ${clinic.phone.display}`}
             >
               <Phone className="size-4" aria-hidden="true" />

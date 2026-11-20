@@ -12,7 +12,7 @@ export function Logo({ tone = 'light', className }: { tone?: 'light' | 'dark'; c
   return (
     <a
       href={`#${sectionIds.home}`}
-      className={cn('group inline-flex items-center gap-3 rounded-lg', className)}
+      className={cn('group inline-flex shrink-0 items-center gap-3 rounded-lg', className)}
       aria-label={`${clinic.name} — back to top`}
     >
       <span
@@ -36,7 +36,7 @@ export function Logo({ tone = 'light', className }: { tone?: 'light' | 'dark'; c
         </span>
         <span
           className={cn(
-            'mt-1 text-[0.6875rem] font-medium tracking-[0.17em] uppercase',
+            'mt-1 text-[0.6875rem] font-medium tracking-[0.17em] whitespace-nowrap uppercase',
             dark ? 'text-brand-200' : 'text-brand-600',
           )}
         >

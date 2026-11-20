@@ -10,6 +10,7 @@ import { Hero } from '../components/sections/Hero'
 import { PatientConcerns } from '../components/sections/PatientConcerns'
 import { Reviews } from '../components/sections/Reviews'
 import { Services } from '../components/sections/Services'
+import { Team } from '../components/sections/Team'
 import { TreatmentJourney } from '../components/sections/TreatmentJourney'
 import { TrustStrip } from '../components/sections/TrustStrip'
 import { WhyChooseUs } from '../components/sections/WhyChooseUs'
@@ -53,6 +54,7 @@ export function App() {
         <WhyChooseUs />
         <Services onEnquire={handleEnquire} />
         <TreatmentJourney />
+        <Team />
         <Gallery />
         <Reviews />
         <Contact enquiry={enquiry} />

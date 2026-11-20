@@ -63,6 +63,7 @@ export const sectionIds = {
   home: 'home',
   services: 'services',
   whyUs: 'why-us',
+  team: 'team',
   journey: 'journey',
   gallery: 'gallery',
   reviews: 'reviews',
@@ -73,7 +74,8 @@ export const sectionIds = {
 
 export const navLinks = [
   { label: 'Services', href: `#${sectionIds.services}` },
-  { label: 'Why Choose Us', href: `#${sectionIds.whyUs}` },
+  { label: 'Why Us', href: `#${sectionIds.whyUs}` },
+  { label: 'Dentists', href: `#${sectionIds.team}` },
   { label: 'Gallery', href: `#${sectionIds.gallery}` },
   { label: 'Reviews', href: `#${sectionIds.reviews}` },
   { label: 'FAQs', href: `#${sectionIds.faqs}` },
